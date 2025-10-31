@@ -17,21 +17,21 @@ public:
     constexpr Vec3(const Vec2& xy, float z) noexcept : x(xy.x), y(xy.y), z(z) {}
 
     // Element access
-    constexpr float& operator[](int index) noexcept { return (&x)[index]; }
-    constexpr const float& operator[](int index) const noexcept { return (&x)[index]; }
+    float& operator[](int index) noexcept;
+    const float& operator[](int index) const noexcept;
 
     // Arithmetic operators
     constexpr Vec3 operator+(const Vec3& rhs) const noexcept { return Vec3(x + rhs.x, y + rhs.y, z + rhs.z); }
     constexpr Vec3 operator-(const Vec3& rhs) const noexcept { return Vec3(x - rhs.x, y - rhs.y, z - rhs.z); }
     constexpr Vec3 operator*(float scalar) const noexcept { return Vec3(x * scalar, y * scalar, z * scalar); }
-    constexpr Vec3 operator/(float scalar) const noexcept { return Vec3(x / scalar, y / scalar, z / scalar); }
+    Vec3 operator/(float scalar) const noexcept;
     constexpr Vec3 operator-() const noexcept { return Vec3(-x, -y, -z); }
 
     // Compound assignment operators
     constexpr Vec3& operator+=(const Vec3& rhs) noexcept { x += rhs.x; y += rhs.y; z += rhs.z; return *this; }
     constexpr Vec3& operator-=(const Vec3& rhs) noexcept { x -= rhs.x; y -= rhs.y; z -= rhs.z; return *this; }
     constexpr Vec3& operator*=(float scalar) noexcept { x *= scalar; y *= scalar; z *= scalar; return *this; }
-    constexpr Vec3& operator/=(float scalar) noexcept { x /= scalar; y /= scalar; z /= scalar; return *this; }
+    Vec3& operator/=(float scalar) noexcept;
 
     // Comparison operators
     bool operator==(const Vec3& rhs) const noexcept;

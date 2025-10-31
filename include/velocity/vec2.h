@@ -15,21 +15,21 @@ public:
     constexpr explicit Vec2(float scalar) noexcept : x(scalar), y(scalar) {}
 
     // Element access
-    constexpr float& operator[](int index) noexcept { return (&x)[index]; }
-    constexpr const float& operator[](int index) const noexcept { return (&x)[index]; }
+    float& operator[](int index) noexcept;
+    const float& operator[](int index) const noexcept;
 
     // Arithmetic operators
     constexpr Vec2 operator+(const Vec2& rhs) const noexcept { return Vec2(x + rhs.x, y + rhs.y); }
     constexpr Vec2 operator-(const Vec2& rhs) const noexcept { return Vec2(x - rhs.x, y - rhs.y); }
     constexpr Vec2 operator*(float scalar) const noexcept { return Vec2(x * scalar, y * scalar); }
-    constexpr Vec2 operator/(float scalar) const noexcept { return Vec2(x / scalar, y / scalar); }
+    Vec2 operator/(float scalar) const noexcept;
     constexpr Vec2 operator-() const noexcept { return Vec2(-x, -y); }
 
     // Compound assignment operators
     constexpr Vec2& operator+=(const Vec2& rhs) noexcept { x += rhs.x; y += rhs.y; return *this; }
     constexpr Vec2& operator-=(const Vec2& rhs) noexcept { x -= rhs.x; y -= rhs.y; return *this; }
     constexpr Vec2& operator*=(float scalar) noexcept { x *= scalar; y *= scalar; return *this; }
-    constexpr Vec2& operator/=(float scalar) noexcept { x /= scalar; y /= scalar; return *this; }
+    Vec2& operator/=(float scalar) noexcept;
 
     // Comparison operators
     bool operator==(const Vec2& rhs) const noexcept;

@@ -15,14 +15,19 @@ Mat4::Mat4(float diagonal) noexcept : m{} {
     m[15] = diagonal;  // m[3][3]
 }
 
-Mat4::Mat4(float m00, float m01, float m02, float m03,
-           float m10, float m11, float m12, float m13,
-           float m20, float m21, float m22, float m23,
-           float m30, float m31, float m32, float m33) noexcept {
-    m[0] = m00; m[4] = m01; m[8] = m02;  m[12] = m03;
-    m[1] = m10; m[5] = m11; m[9] = m12;  m[13] = m13;
-    m[2] = m20; m[6] = m21; m[10] = m22; m[14] = m23;
-    m[3] = m30; m[7] = m31; m[11] = m32; m[15] = m33;
+Mat4::Mat4(float c0r0, float c0r1, float c0r2, float c0r3,
+           float c1r0, float c1r1, float c1r2, float c1r3,
+           float c2r0, float c2r1, float c2r2, float c2r3,
+           float c3r0, float c3r1, float c3r2, float c3r3) noexcept {
+    // Column-major storage: each column is stored contiguously
+    // Column 0
+    m[0] = c0r0; m[1] = c0r1; m[2] = c0r2; m[3] = c0r3;
+    // Column 1  
+    m[4] = c1r0; m[5] = c1r1; m[6] = c1r2; m[7] = c1r3;
+    // Column 2
+    m[8] = c2r0; m[9] = c2r1; m[10] = c2r2; m[11] = c2r3;
+    // Column 3
+    m[12] = c3r0; m[13] = c3r1; m[14] = c3r2; m[15] = c3r3;
 }
 
 Mat4::Mat4(const std::array<float, 16>& values) noexcept : m(values) {}
@@ -156,35 +161,107 @@ float Mat4::determinant() const noexcept {
 }
 
 Mat4 Mat4::inverse() const {
-    float det = determinant();
+    // Calculate the full cofactor matrix for proper matrix inversion
+    Mat4 cofactor;
+    
+    // Helper lambda to calculate 3x3 determinant
+    auto det3x3 = [](float a00, float a01, float a02,
+                     float a10, float a11, float a12,
+                     float a20, float a21, float a22) -> float {
+        return a00 * (a11 * a22 - a12 * a21) -
+               a01 * (a10 * a22 - a12 * a20) +
+               a02 * (a10 * a21 - a11 * a20);
+    };
+    
+    // Calculate cofactor matrix
+    // C(i,j) = (-1)^(i+j) * M(i,j) where M(i,j) is the minor
+    
+    // Row 0
+    cofactor(0, 0) = det3x3((*this)(1,1), (*this)(1,2), (*this)(1,3),
+                           (*this)(2,1), (*this)(2,2), (*this)(2,3),
+                           (*this)(3,1), (*this)(3,2), (*this)(3,3));
+    
+    cofactor(0, 1) = -det3x3((*this)(1,0), (*this)(1,2), (*this)(1,3),
+                            (*this)(2,0), (*this)(2,2), (*this)(2,3),
+                            (*this)(3,0), (*this)(3,2), (*this)(3,3));
+    
+    cofactor(0, 2) = det3x3((*this)(1,0), (*this)(1,1), (*this)(1,3),
+                           (*this)(2,0), (*this)(2,1), (*this)(2,3),
+                           (*this)(3,0), (*this)(3,1), (*this)(3,3));
+    
+    cofactor(0, 3) = -det3x3((*this)(1,0), (*this)(1,1), (*this)(1,2),
+                            (*this)(2,0), (*this)(2,1), (*this)(2,2),
+                            (*this)(3,0), (*this)(3,1), (*this)(3,2));
+    
+    // Row 1
+    cofactor(1, 0) = -det3x3((*this)(0,1), (*this)(0,2), (*this)(0,3),
+                            (*this)(2,1), (*this)(2,2), (*this)(2,3),
+                            (*this)(3,1), (*this)(3,2), (*this)(3,3));
+    
+    cofactor(1, 1) = det3x3((*this)(0,0), (*this)(0,2), (*this)(0,3),
+                           (*this)(2,0), (*this)(2,2), (*this)(2,3),
+                           (*this)(3,0), (*this)(3,2), (*this)(3,3));
+    
+    cofactor(1, 2) = -det3x3((*this)(0,0), (*this)(0,1), (*this)(0,3),
+                            (*this)(2,0), (*this)(2,1), (*this)(2,3),
+                            (*this)(3,0), (*this)(3,1), (*this)(3,3));
+    
+    cofactor(1, 3) = det3x3((*this)(0,0), (*this)(0,1), (*this)(0,2),
+                           (*this)(2,0), (*this)(2,1), (*this)(2,2),
+                           (*this)(3,0), (*this)(3,1), (*this)(3,2));
+    
+    // Row 2
+    cofactor(2, 0) = det3x3((*this)(0,1), (*this)(0,2), (*this)(0,3),
+                           (*this)(1,1), (*this)(1,2), (*this)(1,3),
+                           (*this)(3,1), (*this)(3,2), (*this)(3,3));
+    
+    cofactor(2, 1) = -det3x3((*this)(0,0), (*this)(0,2), (*this)(0,3),
+                            (*this)(1,0), (*this)(1,2), (*this)(1,3),
+                            (*this)(3,0), (*this)(3,2), (*this)(3,3));
+    
+    cofactor(2, 2) = det3x3((*this)(0,0), (*this)(0,1), (*this)(0,3),
+                           (*this)(1,0), (*this)(1,1), (*this)(1,3),
+                           (*this)(3,0), (*this)(3,1), (*this)(3,3));
+    
+    cofactor(2, 3) = -det3x3((*this)(0,0), (*this)(0,1), (*this)(0,2),
+                            (*this)(1,0), (*this)(1,1), (*this)(1,2),
+                            (*this)(3,0), (*this)(3,1), (*this)(3,2));
+    
+    // Row 3
+    cofactor(3, 0) = -det3x3((*this)(0,1), (*this)(0,2), (*this)(0,3),
+                            (*this)(1,1), (*this)(1,2), (*this)(1,3),
+                            (*this)(2,1), (*this)(2,2), (*this)(2,3));
+    
+    cofactor(3, 1) = det3x3((*this)(0,0), (*this)(0,2), (*this)(0,3),
+                           (*this)(1,0), (*this)(1,2), (*this)(1,3),
+                           (*this)(2,0), (*this)(2,2), (*this)(2,3));
+    
+    cofactor(3, 2) = -det3x3((*this)(0,0), (*this)(0,1), (*this)(0,3),
+                            (*this)(1,0), (*this)(1,1), (*this)(1,3),
+                            (*this)(2,0), (*this)(2,1), (*this)(2,3));
+    
+    cofactor(3, 3) = det3x3((*this)(0,0), (*this)(0,1), (*this)(0,2),
+                           (*this)(1,0), (*this)(1,1), (*this)(1,2),
+                           (*this)(2,0), (*this)(2,1), (*this)(2,2));
+    
+    // Calculate determinant using first row of cofactor matrix
+    float det = (*this)(0,0) * cofactor(0,0) + 
+                (*this)(0,1) * cofactor(0,1) + 
+                (*this)(0,2) * cofactor(0,2) + 
+                (*this)(0,3) * cofactor(0,3);
+    
     if (math::isZero(det)) {
         throw std::runtime_error("Matrix is not invertible (determinant is zero)");
     }
     
+    // Adjugate matrix is the transpose of the cofactor matrix
+    // Inverse = (1/det) * adjugate = (1/det) * transpose(cofactor)
     Mat4 result;
     float inv_det = 1.0f / det;
     
-    // Calculate adjugate matrix and multiply by inverse determinant
-    // This is a simplified version - full implementation would use cofactor matrix
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
-            // Calculate minor determinant for position (row, col)
-            float minor[9];
-            int minor_idx = 0;
-            
-            for (int i = 0; i < 4; ++i) {
-                if (i == row) continue;
-                for (int j = 0; j < 4; ++j) {
-                    if (j == col) continue;
-                    minor[minor_idx++] = (*this)(i, j);
-                }
-            }
-            
-            float minor_det = minor[0] * (minor[4] * minor[8] - minor[5] * minor[7]) -
-                             minor[1] * (minor[3] * minor[8] - minor[5] * minor[6]) +
-                             minor[2] * (minor[3] * minor[7] - minor[4] * minor[6]);
-            
-            result(col, row) = ((row + col) % 2 == 0 ? 1.0f : -1.0f) * minor_det * inv_det;
+            result(row, col) = cofactor(col, row) * inv_det;  // Transpose while copying
         }
     }
     
@@ -236,6 +313,17 @@ std::string Mat4::toString(int precision) const {
 
 Mat4 Mat4::identity() noexcept {
     return Mat4(1.0f);
+}
+
+Mat4 Mat4::fromRows(float r0c0, float r0c1, float r0c2, float r0c3,
+                    float r1c0, float r1c1, float r1c2, float r1c3,
+                    float r2c0, float r2c1, float r2c2, float r2c3,
+                    float r3c0, float r3c1, float r3c2, float r3c3) noexcept {
+    // Convert row-major parameters to column-major constructor
+    return Mat4(r0c0, r1c0, r2c0, r3c0,  // Column 0: r0c0, r1c0, r2c0, r3c0
+                r0c1, r1c1, r2c1, r3c1,  // Column 1: r0c1, r1c1, r2c1, r3c1
+                r0c2, r1c2, r2c2, r3c2,  // Column 2: r0c2, r1c2, r2c2, r3c2
+                r0c3, r1c3, r2c3, r3c3); // Column 3: r0c3, r1c3, r2c3, r3c3
 }
 
 Mat4 Mat4::translation(const Vec3& translation) noexcept {

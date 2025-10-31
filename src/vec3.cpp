@@ -5,6 +5,28 @@
 
 namespace vel {
 
+float& Vec3::operator[](int index) noexcept {
+    #ifdef _DEBUG
+    if (index < 0 || index >= 3) {
+        // In debug mode, return reference to static dummy for invalid index
+        static float dummy = 0.0f;
+        return dummy;
+    }
+    #endif
+    return (&x)[index];
+}
+
+const float& Vec3::operator[](int index) const noexcept {
+    #ifdef _DEBUG
+    if (index < 0 || index >= 3) {
+        // In debug mode, return reference to static zero
+        static const float zero = 0.0f;
+        return zero;
+    }
+    #endif
+    return (&x)[index];
+}
+
 bool Vec3::operator==(const Vec3& rhs) const noexcept {
     return math::isEqual(x, rhs.x) && 
            math::isEqual(y, rhs.y) && 
@@ -38,6 +60,34 @@ Vec3 Vec3::project(const Vec3& onto) const noexcept {
         return Vec3::zero();
     }
     return onto * (dot_product / onto_length_sq);
+}
+
+Vec3 Vec3::operator/(float scalar) const noexcept {
+    if (math::isZero(scalar)) {
+        #ifdef _DEBUG
+        // In debug mode, you could add logging here
+        // std::cerr << "Warning: Division by zero in Vec3::operator/, returning zero vector" << std::endl;
+        #endif
+        return Vec3::zero();
+    }
+    return Vec3(x / scalar, y / scalar, z / scalar);
+}
+
+Vec3& Vec3::operator/=(float scalar) noexcept {
+    if (math::isZero(scalar)) {
+        #ifdef _DEBUG
+        // In debug mode, you could add logging here
+        // std::cerr << "Warning: Division by zero in Vec3::operator/=, setting to zero vector" << std::endl;
+        #endif
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        return *this;
+    }
+    x /= scalar;
+    y /= scalar;
+    z /= scalar;
+    return *this;
 }
 
 std::string Vec3::toString(int precision) const {
