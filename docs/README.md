@@ -9,11 +9,13 @@ This directory contains comprehensive documentation for the Velocity Math Librar
 
 ## Library Features
 
-- **High Performance**: Optimized vector and matrix operations with up to 400M+ operations per second
+- **High Performance**: Optimized vector and matrix operations with up to 704M+ operations per second
 - **Modern C++**: C++17 with constexpr operations and zero-cost abstractions
 - **Graphics Ready**: Column-major matrices, projection utilities, and transformation functions
 - **Cross-Platform**: Windows, Linux, and macOS support with multiple build systems
 - **Comprehensive**: Vec2, Vec3, Vec4 vectors and Mat4 matrices with full mathematical operations
+- **Production Ready**: Robust error handling, bounds checking, and numerical stability
+- **Flexible**: Compile-time configuration options for performance vs safety trade-offs
 
 ## Quick Reference
 
@@ -52,13 +54,27 @@ Mat4 ortho = Mat4::orthographic(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
 
 ## Performance Highlights
 
-Benchmark results on Intel i5-11320H @ 3.20GHz:
+Latest benchmark results on Intel i5-11320H @ 3.20GHz with GCC 15.2 (-O3):
 
-- **Vector Operations**: Up to 408M operations/second
-- **Matrix Operations**: Up to 48M operations/second
-- **Memory Throughput**: Up to 9.2GB/second
+### Top Performers
+- **Vec3 Length**: 704M ops/sec (10.7 GB/s) - Fastest vector operation
+- **Vec3 Scalar Multiplication**: 456M ops/sec (10.4 GB/s)
+- **Mat4 Determinant**: 44M ops/sec (2.9 GB/s) - Fastest matrix operation
+- **Mat4 Transpose**: 44M ops/sec (5.4 GB/s)
 
-For detailed performance analysis, see [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md).
+### Real-World Performance
+- **Vector Addition**: 329M ops/sec - Critical for physics simulations
+- **Matrix Multiplication**: 30M ops/sec - Core graphics transformation
+- **Point Transformation**: 45M ops/sec - 3D rendering pipeline
+- **Cross Product**: 316M ops/sec - Lighting and collision detection
+
+### Version 1.1.0 Improvements
+- ✅ **Enhanced Safety**: Zero division and bounds checking protection
+- ✅ **Better Accuracy**: Improved matrix inverse with proper cofactor calculation
+- ✅ **Optimized Math**: Dual Newton-Raphson iteration for fast inverse sqrt
+- ✅ **Robust Edge Cases**: Comprehensive error handling and validation
+
+For complete performance analysis and detailed benchmarks, see [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md).
 
 ## Building and Integration
 

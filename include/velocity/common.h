@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <chrono>
 
 namespace vel {
 
@@ -104,33 +103,7 @@ inline float standardInverseSqrt(float x) noexcept {
     return (x > 0.0f) ? (1.0f / std::sqrt(x)) : 0.0f;
 }
 
-// Benchmark function to compare performance (for testing purposes)
-inline void benchmarkInverseSqrt(int iterations = 1000000) noexcept {
-    // This function is primarily for development/testing
-    // In production, the compiler flag should be used to select the best method
-    volatile float result = 0.0f;  // Prevent optimization
-    
-    // Test values
-    float test_values[] = {1.0f, 4.0f, 9.0f, 16.0f, 25.0f, 0.25f, 0.01f, 100.0f};
-    int num_values = sizeof(test_values) / sizeof(test_values[0]);
-    
-    // Benchmark fast version
-    auto start_fast = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iterations; ++i) {
-        result += fastInverseSqrt(test_values[i % num_values]);
-    }
-    auto end_fast = std::chrono::high_resolution_clock::now();
-    
-    // Benchmark standard version
-    auto start_std = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iterations; ++i) {
-        result += standardInverseSqrt(test_values[i % num_values]);
-    }
-    auto end_std = std::chrono::high_resolution_clock::now();
-    
-    // Prevent optimization of result
-    (void)result;
-}
+
 
 } // namespace math
 } // namespace vel

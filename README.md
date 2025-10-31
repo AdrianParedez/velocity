@@ -32,13 +32,28 @@ Vec3 transformedPoint = transform.transformPoint(Vec3(1, 0, 0));
 
 ## Performance
 
-Benchmark results on Intel i5-11320H @ 3.20GHz:
+Benchmark results on Intel i5-11320H @ 3.20GHz with GCC 15.2 (-O3):
 
-- **Vector Operations**: Up to 408M operations/second
-- **Matrix Operations**: Up to 48M operations/second
-- **Memory Throughput**: Up to 9.2GB/second
+### Vector Operations (1M iterations)
+- **Vec3 Length**: 704M ops/sec (10.7 GB/s)
+- **Vec3 Scalar Multiplication**: 456M ops/sec (10.4 GB/s)
+- **Vec3 Addition**: 329M ops/sec (11.3 GB/s)
+- **Vec3 Cross Product**: 316M ops/sec (10.8 GB/s)
 
-See [docs/BENCHMARK_RESULTS.md](docs/BENCHMARK_RESULTS.md) for detailed performance analysis.
+### Matrix Operations (100K iterations)
+- **Mat4 Determinant**: 44M ops/sec (2.9 GB/s)
+- **Mat4 Transpose**: 44M ops/sec (5.4 GB/s)
+- **Mat4 Addition**: 38M ops/sec (6.9 GB/s)
+- **Mat4 Multiplication**: 30M ops/sec (5.5 GB/s)
+
+### Key Improvements in v1.1.0
+- ✅ **Zero Division Protection**: Safe vector division operations
+- ✅ **Bounds Checking**: Debug-mode array access validation
+- ✅ **Improved Matrix Inverse**: Proper cofactor-based calculation
+- ✅ **Enhanced Precision**: Dual Newton-Raphson fast inverse sqrt
+- ✅ **Better Error Handling**: Robust edge case management
+
+See [docs/BENCHMARK_RESULTS.md](docs/BENCHMARK_RESULTS.md) for complete performance analysis.
 
 ## Building
 
